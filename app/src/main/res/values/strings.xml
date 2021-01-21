@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">EmployeesApp</string>
+    <string name="name">Имя:</string>
+    <string name="surname">Фамилия:</string>
 </resources>

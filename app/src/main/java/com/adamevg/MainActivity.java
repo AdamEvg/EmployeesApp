@@ -1,37 +1,40 @@
 package com.adamevg;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.adamevg.adapters.EmployeeAdapter;
-import com.adamevg.api.ApiFactory;
-import com.adamevg.api.ApiService;
 import com.adamevg.pojo.Employee;
-import com.adamevg.pojo.EmployeeResponse;
+import com.adamevg.viewmodel.EmployeeViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
-
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private EmployeeAdapter employeeAdapter;
-    private CompositeDisposable compositeDisposable;
+    private EmployeeViewModel viewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (!hasConnection(this)) {
+            Toast.makeText(this, "Отсутствует интернет соединение", Toast.LENGTH_SHORT).show();
+        }
 
         recyclerView = findViewById(R.id.recycler_view_employees__activity_main);
         employeeAdapter = new EmployeeAdapter();
@@ -40,39 +43,44 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(employeeAdapter);
         employeeAdapter.setEmployees(new ArrayList<>());
 
-        compositeDisposable = new CompositeDisposable();
+        viewModel = ViewModelProviders.of(this).get(EmployeeViewModel.class);
+        viewModel.getEmployees().observe(this, employees -> employeeAdapter.setEmployees(employees));
 
-        ApiFactory apiFactory = ApiFactory.getInstance();
-        ApiService apiService = apiFactory.getApiService();
-        Disposable disposable = apiService.getEmployees()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<EmployeeResponse>() {
-                    @Override
-                    public void accept(EmployeeResponse employeeResponse) throws Exception {
-                        employeeAdapter.setEmployees(employeeResponse.getEmployeeResponse());
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                    }
-                });
-        compositeDisposable.add(disposable);
-//        employeeAdapter.setOnEmployeeClickListener(position -> {
-//            Employee employee2 = new Employee();
-//            employee2 = employeeAdapter.getEmployees().get(position);
-//            Intent intent = new Intent(MainActivity.this,EmployeeDetailActivity.class);
-//            intent.putExtra("NAME",employee2.getFName());
-//            startActivity(intent);
-//        });
+        viewModel.getErrors().observe(this, throwable -> {
+            if (throwable != null) {
+                Toast.makeText(MainActivity.this, "Error" + throwable, Toast.LENGTH_SHORT).show();
+                viewModel.clearErrors();
+            }
+        });
+        viewModel.loadData();
+
+        employeeAdapter.setOnEmployeeClickListener(position -> {
+            Employee employee = new Employee();
+            employee = employeeAdapter.getEmployees().get(position);
+            Intent intent = new Intent(MainActivity.this, EmployeeDetailActivity.class);
+            intent.putExtra("NAME", employee.getFirstName());
+            startActivity(intent);
+        });
+
+
     }
 
-    @Override
-    protected void onDestroy() {
-        if (compositeDisposable != null) {
-            compositeDisposable.dispose();
+
+    public static boolean hasConnection(final Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
         }
-        super.onDestroy();
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
+
 }

@@ -14,7 +14,7 @@ public abstract class EmployeeDatabase extends RoomDatabase {
     private static EmployeeDatabase employeeDatabase;
     private static final Object LOCK = new Object();
 
-    private static EmployeeDatabase getInstance(Context context) {
+    public static EmployeeDatabase getInstance(Context context) {
         synchronized (LOCK){
             if (employeeDatabase == null) {
                 employeeDatabase = Room

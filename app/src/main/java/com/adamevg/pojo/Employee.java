@@ -3,13 +3,16 @@ package com.adamevg.pojo;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 import java.util.List;
 
+import com.adamevg.converters.Converter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "employees")
+@TypeConverters(value = Converter.class)
 public class Employee {
     public long getEmployeeId() {
         return employeeId;
@@ -41,9 +44,9 @@ public class Employee {
     @Expose
     private String avatarUrl;
 
-//    @SerializedName("specialty")
-//    @Expose
-//    private List<Specialty> specialty = null;
+    @SerializedName("specialty")
+    @Expose
+    private List<Specialty> specialty = null;
 
     public String getFirstName() {
         return firstName;
@@ -77,11 +80,11 @@ public class Employee {
         this.avatarUrl = avatarUrl;
     }
 
-//    public List<Specialty> getSpecialty() {
-//        return specialty;
-//    }
-//
-//    public void setSpecialty(List<Specialty> specialty) {
-//        this.specialty = specialty;
-//    }
+    public List<Specialty> getSpecialty() {
+        return specialty;
+    }
+
+    public void setSpecialty(List<Specialty> specialty) {
+        this.specialty = specialty;
+    }
 }

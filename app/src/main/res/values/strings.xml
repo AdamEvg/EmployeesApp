@@ -2,4 +2,7 @@
     <string name="app_name">EmployeesApp</string>
     <string name="name">Имя:</string>
     <string name="surname">Фамилия:</string>
+    <string name="birthday">Дата рождения</string>
+    <string name="specialty">Специальность</string>
+    <string name="list_employees">Список сотрудников</string>
 </resources>

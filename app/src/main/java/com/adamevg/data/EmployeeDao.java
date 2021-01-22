@@ -22,7 +22,7 @@ public interface EmployeeDao {
     void deleteAllEmployees();
 
     @Query("SELECT * FROM employees WHERE employeeId=:id")
-    Employee getEmployee(int id);
+    Employee getEmployee(long id);
 
     @Query("SELECT COUNT(*) FROM employees")
     int getQuantityOfEmployeesInTable();

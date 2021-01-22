@@ -87,4 +87,16 @@ public class Employee {
     public void setSpecialty(List<Specialty> specialty) {
         this.specialty = specialty;
     }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "employeeId=" + employeeId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", birthday='" + birthday + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
+                ", specialty=" + specialty +
+                '}';
+    }
 }

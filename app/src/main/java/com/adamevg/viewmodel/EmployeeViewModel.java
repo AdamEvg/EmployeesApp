@@ -14,6 +14,7 @@ import com.adamevg.data.EmployeeDatabase;
 import com.adamevg.pojo.Employee;;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -38,7 +39,7 @@ public class EmployeeViewModel extends AndroidViewModel {
         return errors;
     }
 
-    public void clearErrors(){
+    public void clearErrors() {
         errors.setValue(null);
     }
 
@@ -77,6 +78,25 @@ public class EmployeeViewModel extends AndroidViewModel {
         }
     }
 
+    public Employee getEmployeeById(long id) {
+        try {
+            return new GetEmployeeByIdTask().execute(id).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new Employee();
+    }
+
+    private static class GetEmployeeByIdTask extends AsyncTask<Long, Void, Employee> {
+        @Override
+        protected Employee doInBackground(Long... longs) {
+
+            return employeeDatabase.getEmployeeDao().getEmployee(longs[0]);
+        }
+    }
+
     public void loadData() {
         ApiFactory apiFactory = ApiFactory.getInstance();
         ApiService apiService = apiFactory.getApiService();
@@ -96,7 +116,10 @@ public class EmployeeViewModel extends AndroidViewModel {
 
     @Override
     protected void onCleared() {
-        compositeDisposable.dispose();
+        if(compositeDisposable!=null){
+            compositeDisposable.dispose();
+        }
+
         super.onCleared();
     }
 }

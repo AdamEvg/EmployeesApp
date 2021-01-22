@@ -55,10 +55,9 @@ public class MainActivity extends AppCompatActivity {
         viewModel.loadData();
 
         employeeAdapter.setOnEmployeeClickListener(position -> {
-            Employee employee = new Employee();
-            employee = employeeAdapter.getEmployees().get(position);
+            Employee employee = employeeAdapter.getEmployees().get(position);
             Intent intent = new Intent(MainActivity.this, EmployeeDetailActivity.class);
-            intent.putExtra("NAME", employee.getFirstName());
+            intent.putExtra("ID", employee.getEmployeeId());
             startActivity(intent);
         });
 

@@ -6,5 +6,6 @@
 * Room
 * Picasso
 
-![Frame 3](https://user-images.githubusercontent.com/77172034/105548466-b3109380-5d10-11eb-8af6-15127f0336c9.png)
+![Frame 3](https://user-images.githubusercontent.com/77172034/105549705-249d1180-5d12-11eb-8179-f8106a5a3c08.png)
+
 
